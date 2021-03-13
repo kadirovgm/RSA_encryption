@@ -1,5 +1,7 @@
 import math
 import random
+from collections import namedtuple
+
 # # # входные данные
 # def quick_power_alg(x,d,n):
 #
@@ -160,11 +162,6 @@ def rand_prostoy_chislo(numeric):
 #     q_check = is_prime(p, 10)
 # print(q_check)
 
-print("Primary p: ")
-p = rand_prostoy_chislo(4)
-print("Primary q: ")
-q = rand_prostoy_chislo(4)
-
 
 def Open_key():
     l = 60
@@ -176,3 +173,9 @@ def Private_key():
 
     return 0
 
+
+if __name__ == '__main__':
+    print("Primary p: ")
+    p = rand_prostoy_chislo(4)
+    print("Primary q: ")
+    q = rand_prostoy_chislo(4)
