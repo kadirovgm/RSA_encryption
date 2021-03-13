@@ -8,14 +8,16 @@ import random
 #     while d > 0:
 #         if d % 2 == 1:
 #             y = (y*x) % n
-#         elif d == d // 2:
-#             x = (x * x) % n
-#             break
+#         else:
+#             d = d // 2
+#             x = (x*x) % n
+#
 #     print(y)
 #
-# quick_power_alg(2, 8, 256)
+# quick_power_alg(595, 703, 991)
 
-
+# b = pow(595, 703, 991)
+# print(b)
 # def fastExp(b, n):
 # #     def even(n):#проверка четности
 # #         if n % 2 == 0:
@@ -96,34 +98,74 @@ import random
 
 # L = 60, e = 17
 
-def primFerma(a,n):
-    if a**(n-1)%n==1:
-        print("правдоподобно простое")
-    else:
-        print ("составное")
-# def rand_prostoy_chislo(numeric):
-#     result = []
-#     for i in range(numeric):
-#         result.append(random.randint(0,1))
-#     # if result[numeric-1] == 0:
-#     #     rand_prostoy_chislo(numeric)
-#     x = len(result) - 1
-#     res_perevod = 0
-#     for i,v in enumerate(result):
-#         res_perevod += v * 10 ** (x-i)
-#     with open("prostoy.txt", mode='w', encoding="utf-8") as file_res:
-#         file_res.write(str(res_perevod))
-#
-# rand_prostoy_chislo(10)
+# def primFerma(a,n):
+#     if a**(n-1)%n==1:
+#         print("правдоподобно простое")
+#     else:
+#         print ("составное")
+# primFerma(10,11000101)
 
-def rand_chislo_prime(numeric):
-    with open("prostoy.txt", mode="w") as file:
-        #bitString = ''.join(random.choice('01') for i in range(numeric-1))
-        chislo = []
-        chislo = (random.choice('01') for i in range(numeric-1))
-        #chislo.append(1)
-        file.write(chislo)
-rand_chislo_prime(10)
+def is_prime(num, test_count):
+    for i in range(test_count):
+
+        rnd = random.randint(1, num - 1)
+
+        if (rnd ** (num - 1) % num != 1):
+            return False
+
+    return True
+
+
+def rand_prostoy_chislo(numeric):
+    result = []
+    for i in range(numeric-1):
+        result.append(random.randint(0,1))
+    result.append(1)
+    # if result[numeric-1] == 0:
+    #     rand_prostoy_chislo(numeric)
+    # x = len(result) - 1
+    # res_perevod = 0
+    # for i,v in enumerate(result):
+    #     res_perevod += v * 10 ** (x-i)
+    # with open("prostoy.txt", mode='w', encoding="utf-8") as file_res:
+    #     file_res.write(str(res_perevod))
+    with open("prostoy.txt", mode='w', encoding="utf-8") as file_res:
+        file_res.write(str(result))
+    # print(len(result))
+    # print(result)
+    x = len(result) - 1  # объединение элементов списка в одно целое число
+    res_perevod = 0
+    for i, v in enumerate(result):
+        res_perevod += v * 10 ** (x - i)
+    # print(res_perevod)
+
+    if is_prime(res_perevod,10) == True:
+        print(result)
+        print("True")
+        return res_perevod
+    else:
+        rand_prostoy_chislo(numeric)
+
+# p = rand_prostoy_chislo(4)
+# p_check = is_prime(p, 10)
+# while p_check != True:
+#     p = rand_prostoy_chislo(4)
+#     p_check = is_prime(p, 10)
+# print(p_check)
+#
+# q = rand_prostoy_chislo(4)
+# q_check = is_prime(p, 10)
+# while q_check != True:
+#     q = rand_prostoy_chislo(4)
+#     q_check = is_prime(p, 10)
+# print(q_check)
+
+print("Primary p: ")
+p = rand_prostoy_chislo(4)
+print("Primary q: ")
+q = rand_prostoy_chislo(4)
+
+
 def Open_key():
     l = 60
 
