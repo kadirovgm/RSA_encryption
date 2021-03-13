@@ -1,4 +1,5 @@
 import math
+import random
 # # # входные данные
 # def quick_power_alg(x,d,n):
 #
@@ -85,3 +86,51 @@ import math
 #     t = v1
 #     print(d,s,t)
 # Evklid_alg_extended(30,18)
+
+#############################################################################################################################
+# # Task 1
+# Программно реализовать процедуру генерации открытого и
+# закрытого ключей заданной длины L (128, 256, 512). В качестве открытой экспоненты использовать одно из чисел Ферма (17, 257, 65537). Сформированные
+# ключи сохранить в файлы: открытый – в файл public.txt, а закрытый – в файл
+# private.txt.
+
+# L = 60, e = 17
+
+def primFerma(a,n):
+    if a**(n-1)%n==1:
+        print("правдоподобно простое")
+    else:
+        print ("составное")
+# def rand_prostoy_chislo(numeric):
+#     result = []
+#     for i in range(numeric):
+#         result.append(random.randint(0,1))
+#     # if result[numeric-1] == 0:
+#     #     rand_prostoy_chislo(numeric)
+#     x = len(result) - 1
+#     res_perevod = 0
+#     for i,v in enumerate(result):
+#         res_perevod += v * 10 ** (x-i)
+#     with open("prostoy.txt", mode='w', encoding="utf-8") as file_res:
+#         file_res.write(str(res_perevod))
+#
+# rand_prostoy_chislo(10)
+
+def rand_chislo_prime(numeric):
+    with open("prostoy.txt", mode="w") as file:
+        #bitString = ''.join(random.choice('01') for i in range(numeric-1))
+        chislo = []
+        chislo = (random.choice('01') for i in range(numeric-1))
+        #chislo.append(1)
+        file.write(chislo)
+rand_chislo_prime(10)
+def Open_key():
+    l = 60
+
+    return 0
+
+
+def Private_key():
+
+    return 0
+
