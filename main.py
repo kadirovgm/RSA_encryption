@@ -1,5 +1,6 @@
 import math
 import random
+from math import gcd
 from collections import namedtuple
 
 # # # входные данные
@@ -65,31 +66,7 @@ from collections import namedtuple
 #     print(a)
 # Evklid_alg_kniga(30,18)
 
-# # Расширенный алгоритм Евклида
-# # найти d=НОД(m,n) и найти s, t такие, что d = s*m + t*n
-# def Evklid_alg_extended(m,n):
-#     a = m
-#     b = n
-#     u1 = 1
-#     u2 = 0
-#     v1 = 0
-#     v2 = 1
-#     while b != 0:
-#         q = a // b
-#         r = a % b
-#         a = b
-#         b = r
-#         r = u2
-#         u2 = u1 - q*u2
-#         u1 = r
-#         r = v2
-#         v2 = v1 - q*v2
-#         v1 = r
-#     d = a
-#     s = u1
-#     t = v1
-#     print(d,s,t)
-# Evklid_alg_extended(30,18)
+
 
 #############################################################################################################################
 # # Task 1
@@ -107,75 +84,163 @@ from collections import namedtuple
 #         print ("составное")
 # primFerma(10,11000101)
 
-def is_prime(num, test_count):
-    for i in range(test_count):
+# def is_prime(num, test_count):
+#     for i in range(test_count):
+#
+#         rnd = random.randint(1, num - 1)
+#
+#         if (rnd ** (num - 1) % num != 1):
+#             return False
+#
+#     return True
 
-        rnd = random.randint(1, num - 1)
+# def toBinary(n):
+#     r = []
+#     while (n > 0):
+#         r.append(n % 2)
+#         n = n / 2
+#         return r
 
-        if (rnd ** (num - 1) % num != 1):
+
+# Расширенный алгоритм Евклида
+# найти d=НОД(m,n) и найти s, t такие, что d = s*m + t*n
+def Evklid_alg_extended(m,n):
+    a = m
+    b = n
+    u1 = 1
+    u2 = 0
+    v1 = 0
+    v2 = 1
+    while b != 0:
+        q = a // b
+        r = a % b
+        a = b
+        b = r
+        r = u2
+        u2 = u1 - q*u2
+        u1 = r
+        r = v2
+        v2 = v1 - q*v2
+        v1 = r
+    d = a
+    s = u1
+    t = v1
+    print(d,s,t)
+
+
+def is_Prime(n):
+    """
+    Miller-Rabin primality test.
+
+    A return value of False means n is certainly not prime. A return value of
+    True means n is very likely a prime.
+    """
+    if n != int(n):
+        return False
+    n = int(n)
+    # Miller-Rabin test for prime
+    if n == 0 or n == 1 or n == 4 or n == 6 or n == 8 or n == 9:
+        return False
+
+    if n == 2 or n == 3 or n == 5 or n == 7:
+        return True
+    s = 0
+    d = n - 1
+    while d % 2 == 0:
+        d >>= 1
+        s += 1
+    assert (2 ** s * d == n - 1)
+
+    def trial_composite(a):
+        if pow(a, d, n) == 1:
+            return False
+        for i in range(s):
+            if pow(a, 2 ** i * d, n) == n - 1:
+                return False
+        return True
+
+    for i in range(8):  # number of trials
+        a = random.randrange(2, n)
+        if trial_composite(a):
             return False
 
     return True
 
+def rand_prostoy_chislo(numeric, temp):
+    result = random.getrandbits(numeric)
+    # print("1: " + str(result))
+    while result % 2 == 0:
+        if result % 2 == 0:
+            result = random.getrandbits(numeric)
+    # print("2: " + str(result))
+    b = is_Prime(result)
+    # print(b)
 
-def rand_prostoy_chislo(numeric):
-    result = []
-    for i in range(numeric-1):
-        result.append(random.randint(0,1))
-    result.append(1)
-    # if result[numeric-1] == 0:
-    #     rand_prostoy_chislo(numeric)
-    # x = len(result) - 1
-    # res_perevod = 0
-    # for i,v in enumerate(result):
-    #     res_perevod += v * 10 ** (x-i)
-    # with open("prostoy.txt", mode='w', encoding="utf-8") as file_res:
-    #     file_res.write(str(res_perevod))
-    with open("prostoy.txt", mode='w', encoding="utf-8") as file_res:
-        file_res.write(str(result))
-    # print(len(result))
-    # print(result)
-    x = len(result) - 1  # объединение элементов списка в одно целое число
-    res_perevod = 0
-    for i, v in enumerate(result):
-        res_perevod += v * 10 ** (x - i)
-    # print(res_perevod)
-
-    if is_prime(res_perevod,10) == True:
+    if b == True:
         print(result)
         print("True")
-        return res_perevod
+
+        if temp == 1:
+            with open("p_prime.txt", mode='w', encoding="utf-8") as file_p:
+                file_p.write(str(result))
+        elif temp == 2:
+            with open("q_prime.txt", mode='w', encoding="utf-8") as file_q:
+                file_q.write(str(result))
+
+        return result
     else:
-        rand_prostoy_chislo(numeric)
+        rand_prostoy_chislo(numeric, temp)
 
-# p = rand_prostoy_chislo(4)
-# p_check = is_prime(p, 10)
-# while p_check != True:
-#     p = rand_prostoy_chislo(4)
-#     p_check = is_prime(p, 10)
-# print(p_check)
-#
-# q = rand_prostoy_chislo(4)
-# q_check = is_prime(p, 10)
-# while q_check != True:
-#     q = rand_prostoy_chislo(4)
-#     q_check = is_prime(p, 10)
-# print(q_check)
+# def phi(n): # функция Эйлера
+#     amount = 0
+#     for k in range(1, n + 1):
+#         if gcd(n, k) == 1:
+#             amount += 1
+#     return amount
+def phi(p,q):
+    phi_n = ((p-1)*(q-1))
+    return phi_n
 
+def find_e(f):
+    if gcd(f,17) == 1:
+        return 17
+    elif gcd(f,257) == 1:
+        return 257
+    elif gcd(f, 65537) == 1:
+        return 65537
+    else:
+        return False
 
-def Open_key():
-    l = 60
+def key_gen(l):
+    # l = 512  # key lengh
+    l_half = l//2
+    print("p is: ")
+    prime_p = rand_prostoy_chislo(l_half, 1)
+    print("q is: ")
+    prime_q = rand_prostoy_chislo(l_half, 2)
+    with open('p_prime.txt') as p:  # считываем регистр
+        p = p.read()
+    with open('q_prime.txt') as q:  # считываем регистр
+        q = q.read()
+    p = int(p)
+    q = int(q)
+    n = p*q
+    print("n is: " + str(n))
 
-    return 0
+    f = phi(p, q)
+    print("phi_n: " + str(f))
 
+    e = find_e(f)
+    print("e is: " + str(e))
 
-def Private_key():
+    print("open key (e,n) is: " + str(e) + ", " + str (n))
 
-    return 0
 
 
 if __name__ == '__main__':
-    print("Primary p: ")
-    p = rand_prostoy_chislo(4)
-    print("Primary q: ")
-    q = rand_prostoy_chislo(4)
+    key = key_gen(512) # находит n
+    # необхоимо релизовать нахождение функции Эйлера (phi)
+    # e = 257 - открытая экспонента, взаимно простая с phi(n)
+    # (e,n) - открытый ключ
+    # (e*d) mod phi(n) - вычисляем d расшир алг Евклида
+
