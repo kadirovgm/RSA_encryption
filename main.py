@@ -94,12 +94,14 @@ from collections import namedtuple
 #
 #     return True
 
-# def toBinary(n):
-#     r = []
-#     while (n > 0):
-#         r.append(n % 2)
-#         n = n / 2
-#         return r
+def toBinary(a):
+    result = []
+
+    while a:
+        result.append(a % 2)
+        a //= 2
+    result.reverse()
+    return result
 
 
 # Расширенный алгоритм Евклида
@@ -256,8 +258,15 @@ def key_gen(l):
         key_priv.write(str(d) + ", " + str(n))
 
 
-def RSA_encryption():
-    return 0
+def RSA_encryption(lengh):
+    print("<Шифрование>")
+    text = random.getrandbits(lengh//8)
+    print("Исходное сообщение: " + str(text))
+    text = int(text)
+    text_bin = toBinary(text)
+    print("Исходное сообщение в бинарном виде: " + str(text_bin))
+    print(len(text_bin))
+
 
 
 def RSA_decryption():
@@ -266,6 +275,7 @@ def RSA_decryption():
 
 if __name__ == '__main__':
     key = key_gen(512) # находит n
+    enc = RSA_encryption(512)
     # необхоимо релизовать нахождение функции Эйлера (phi)
     # e = 257 - открытая экспонента, взаимно простая с phi(n)
     # (e,n) - открытый ключ
