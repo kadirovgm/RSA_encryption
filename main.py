@@ -125,8 +125,10 @@ def Evklid_alg_extended(m,n):
     d = a
     s = u1
     t = v1
-    print(d,s,t)
-
+    print("d: " + str(d))
+    print("s: " + str(s))
+    print("t: " + str(t))
+    return s
 
 def is_Prime(n):
     """
@@ -213,6 +215,7 @@ def find_e(f):
 
 def key_gen(l):
     # l = 512  # key lengh
+    print("Генерируем числа p и q заданной битовой длины и проверяем на простоты тестом Миллера-Рабина: ")
     l_half = l//2
     print("p is: ")
     prime_p = rand_prostoy_chislo(l_half, 1)
@@ -224,17 +227,41 @@ def key_gen(l):
         q = q.read()
     p = int(p)
     q = int(q)
+    print("Вычисляем n: ")
     n = p*q
     print("n is: " + str(n))
-
+    print("Вычисляем функцию Эйлера: ")
     f = phi(p, q)
     print("phi_n: " + str(f))
-
+    print("Вычисляем открытую экспоненту: ")
     e = find_e(f)
     print("e is: " + str(e))
-
+    print("Вычисляем открытый ключ: ")
     print("open key (e,n) is: " + str(e) + ", " + str (n))
+    with open("public.txt", mode='w', encoding="utf-8") as key_pub:
+        key_pub.write(str(e) + ", " + str(n))
 
+    # найдем закрытый ключ расширенным алгоритмом евклида
+    # входные данные: m = e, n = f
+    # выходные данные: s = d, if s < 0: s=s+f
+    print("Расширенный алгоритм Евклида для нахождения закрытой экспоненты (e*d)mod фи(n) = 1: ")
+    d = Evklid_alg_extended(e,f) # закрытая экспонента
+    # print(d)
+    if d < 0:  # если d меньше 0, прибавляем фи
+        d = d + f
+    # print(d)
+    print("Вычисляем закрытый ключ: ")
+    print("private key (d,n) is: " + str(d) + ", " + str (n))
+    with open("private.txt", mode='w', encoding="utf-8") as key_priv:
+        key_priv.write(str(d) + ", " + str(n))
+
+
+def RSA_encryption():
+    return 0
+
+
+def RSA_decryption():
+    return 0
 
 
 if __name__ == '__main__':
