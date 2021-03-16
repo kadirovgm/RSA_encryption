@@ -3,6 +3,7 @@ import random
 from math import gcd
 from collections import namedtuple
 
+
 # # # входные данные
 # def quick_power_alg(x,d,n):
 #
@@ -67,7 +68,6 @@ from collections import namedtuple
 # Evklid_alg_kniga(30,18)
 
 
-
 #############################################################################################################################
 # # Task 1
 # Программно реализовать процедуру генерации открытого и
@@ -106,7 +106,7 @@ def toBinary(a):
 
 # Расширенный алгоритм Евклида
 # найти d=НОД(m,n) и найти s, t такие, что d = s*m + t*n
-def Evklid_alg_extended(m,n):
+def Evklid_alg_extended(m, n):
     a = m
     b = n
     u1 = 1
@@ -119,10 +119,10 @@ def Evklid_alg_extended(m,n):
         a = b
         b = r
         r = u2
-        u2 = u1 - q*u2
+        u2 = u1 - q * u2
         u1 = r
         r = v2
-        v2 = v1 - q*v2
+        v2 = v1 - q * v2
         v1 = r
     d = a
     s = u1
@@ -131,6 +131,7 @@ def Evklid_alg_extended(m,n):
     print("s: " + str(s))
     print("t: " + str(t))
     return s
+
 
 def is_Prime(n):
     """
@@ -170,6 +171,7 @@ def is_Prime(n):
 
     return True
 
+
 def rand_prostoy_chislo(numeric, temp):
     result = random.getrandbits(numeric)
     # print("1: " + str(result))
@@ -195,30 +197,33 @@ def rand_prostoy_chislo(numeric, temp):
     else:
         rand_prostoy_chislo(numeric, temp)
 
+
 # def phi(n): # функция Эйлера
 #     amount = 0
 #     for k in range(1, n + 1):
 #         if gcd(n, k) == 1:
 #             amount += 1
 #     return amount
-def phi(p,q):
-    phi_n = ((p-1)*(q-1))
+def phi(p, q):
+    phi_n = ((p - 1) * (q - 1))
     return phi_n
 
+
 def find_e(f):
-    if gcd(f,17) == 1:
+    if gcd(f, 17) == 1:
         return 17
-    elif gcd(f,257) == 1:
+    elif gcd(f, 257) == 1:
         return 257
     elif gcd(f, 65537) == 1:
         return 65537
     else:
         return False
 
+
 def key_gen(l):
     # l = 512  # key lengh
     print("Генерируем числа p и q заданной битовой длины и проверяем на простоты тестом Миллера-Рабина: ")
-    l_half = l//2
+    l_half = l // 2
     print("p is: ")
     prime_p = rand_prostoy_chislo(l_half, 1)
     print("q is: ")
@@ -230,7 +235,7 @@ def key_gen(l):
     p = int(p)
     q = int(q)
     print("Вычисляем n: ")
-    n = p*q
+    n = p * q
     print("n is: " + str(n))
     print("Вычисляем функцию Эйлера: ")
     f = phi(p, q)
@@ -239,7 +244,7 @@ def key_gen(l):
     e = find_e(f)
     print("e is: " + str(e))
     print("Вычисляем открытый ключ: ")
-    print("open key (e,n) is: " + str(e) + ", " + str (n))
+    print("open key (e,n) is: " + str(e) + ", " + str(n))
     with open("public.txt", mode='w', encoding="utf-8") as key_pub:
         key_pub.write(str(e) + ", " + str(n))
 
@@ -247,37 +252,75 @@ def key_gen(l):
     # входные данные: m = e, n = f
     # выходные данные: s = d, if s < 0: s=s+f
     print("Расширенный алгоритм Евклида для нахождения закрытой экспоненты (e*d)mod фи(n) = 1: ")
-    d = Evklid_alg_extended(e,f) # закрытая экспонента
+    d = Evklid_alg_extended(e, f)  # закрытая экспонента
     # print(d)
     if d < 0:  # если d меньше 0, прибавляем фи
         d = d + f
     # print(d)
     print("Вычисляем закрытый ключ: ")
-    print("private key (d,n) is: " + str(d) + ", " + str (n))
+    print("private key (d,n) is: " + str(d) + ", " + str(n))
     with open("private.txt", mode='w', encoding="utf-8") as key_priv:
         key_priv.write(str(d) + ", " + str(n))
+    return e, n, d
 
 
-def RSA_encryption(lengh):
+def RSA_encryption(lengh, e, n):
     print("<Шифрование>")
-    text = random.getrandbits(lengh//8)
+    # text = random.getrandbits(lengh // 8)
+    with open("text.txt") as text_file:
+        text = text_file.read()
+
+    text_binary = [format(int.from_bytes(i.encode(), 'big'), '08b') for i in text]
+    text_binary = ''.join(text_binary)
+    text_binary = [text_binary[x:x + lengh//4] for x in range(0, len(text_binary), lengh//4)]
+
+    res = []
+    for i in text_binary:
+        i = int(i, 2)
+        res.append(pow(i, e, n))
+    res = ' '.join(map(str, res))
+
     print("Исходное сообщение: " + str(text))
-    text = int(text)
-    text_bin = toBinary(text)
-    print("Исходное сообщение в бинарном виде: " + str(text_bin))
-    print(len(text_bin))
+    print("Зашифрованное сообщение: " + str(res))
+    text_binary = ' '.join(map(str, text_binary))
+    print("Зашифрованное сообщение в бинарном виде: " + str(text_binary))
+    # text = int(text)
+    # text_bin = toBinary(text)
+    # print("Исходное сообщение в бинарном виде: " + str(text_bin))
+    # print(len(text_bin))
 
+    # encrypted = pow(text, e, n)
+    # print("pow: " + str(encrypted))
+    return res
 
+def RSA_decryption(encrypted, d,n, length):
+    print("<Дешифрование>")
+    encrypted = encrypted.split(' ')
+    res = []
+    for i in encrypted:
+        res.append(pow(int(i), d, n))
 
-def RSA_decryption():
-    return 0
+    res = [bin(i)[2:].zfill(length//4) for i in res]
+
+    res_binary = ''.join(map(str, res))
+
+    n = int(res_binary, 2)
+
+    decrypted = n.to_bytes((n.bit_length()) + 7//8, 'big')
+    decrypted = decrypted.decode()
+
+    # decrypted = pow(int(encrypted), d, n)
+    print("Расшифрованное сообщение: " + str(decrypted))
+    return decrypted
 
 
 if __name__ == '__main__':
-    key = key_gen(512) # находит n
-    enc = RSA_encryption(512)
+    e, n, d = key_gen(512)  # находит n
+    # print(e, n, d)
+    enc = RSA_encryption(512, e, n)
+    dec = RSA_decryption(enc, d, n, 512)
+
     # необхоимо релизовать нахождение функции Эйлера (phi)
     # e = 257 - открытая экспонента, взаимно простая с phi(n)
     # (e,n) - открытый ключ
     # (e*d) mod phi(n) - вычисляем d расшир алг Евклида
-
