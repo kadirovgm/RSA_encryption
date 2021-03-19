@@ -104,7 +104,7 @@ def toBinary(a):
     return result
 
 
-# Расширенный алгоритм Евклида
+# Расширенный алгоритм Евклида (-1 1)
 # найти d=НОД(m,n) и найти s, t такие, что d = s*m + t*n
 def Evklid_alg_extended(m, n):
     a = m
@@ -134,30 +134,25 @@ def Evklid_alg_extended(m, n):
 
 
 def is_Prime(n):
-    """
-    Miller-Rabin primality test.
 
-    A return value of False means n is certainly not prime. A return value of
-    True means n is very likely a prime.
-    """
-    if n != int(n):
+    if n != int(n): # проверка на целостность
         return False
     n = int(n)
     # Miller-Rabin test for prime
-    if n == 0 or n == 1 or n == 4 or n == 6 or n == 8 or n == 9:
+    if n == 0 or n == 1 or n == 4 or n == 6 or n == 8 or n == 9: # проверка случаев при которых false
         return False
 
-    if n == 2 or n == 3 or n == 5 or n == 7:
+    if n == 2 or n == 3 or n == 5 or n == 7: # проверка вариантов при которых true
         return True
     s = 0
     d = n - 1
     while d % 2 == 0:
-        d >>= 1
+        d >>= 1  # битовый сдвиг на след степень двойки
         s += 1
-    assert (2 ** s * d == n - 1)
+    assert (2 ** s * d == n - 1)  # инструкция проверки условия
 
-    def trial_composite(a):
-        if pow(a, d, n) == 1:
+    def trial_composite(a):  # проверка на составное число
+        if pow(a, d, n) == 1:  # a^d mod(n)
             return False
         for i in range(s):
             if pow(a, 2 ** i * d, n) == n - 1:
@@ -165,7 +160,7 @@ def is_Prime(n):
         return True
 
     for i in range(8):  # number of trials
-        a = random.randrange(2, n)
+        a = random.randrange(2, n) # случ от 2 до n
         if trial_composite(a):
             return False
 
@@ -181,7 +176,6 @@ def rand_prostoy_chislo(numeric, temp):
     # print("2: " + str(result))
     b = is_Prime(result)
     # print(b)
-
     if b == True:
         print(result)
         print("True")
@@ -264,26 +258,28 @@ def key_gen(l):
     return e, n, d
 
 
-def RSA_encryption(lengh, e, n):
+def RSA_encryption(length, e, n):
     print("<Шифрование>")
     # text = random.getrandbits(lengh // 8)
     with open("text.txt") as text_file:
         text = text_file.read()
 
-    text_binary = [format(int.from_bytes(i.encode(), 'big'), '08b') for i in text]
-    text_binary = ''.join(text_binary)
-    text_binary = [text_binary[x:x + lengh//4] for x in range(0, len(text_binary), lengh//4)]
+    text_binary = [format(int.from_bytes(i.encode(), 'big'), '08b') for i in text] # перевод в двоичный код
+    text_binary = ''.join(text_binary) # объединение
+    text_binary = [text_binary[x:x + length//4] for x in range(0, len(text_binary), length//4)] # разделение на блоки по l//4
 
     res = []
     for i in text_binary:
         i = int(i, 2)
-        res.append(pow(i, e, n))
+        res.append(pow(i, e, n)) # шифрование
     res = ' '.join(map(str, res))
 
     print("Исходное сообщение: " + str(text))
     print("Зашифрованное сообщение: " + str(res))
     text_binary = ' '.join(map(str, text_binary))
     print("Зашифрованное сообщение в бинарном виде: " + str(text_binary))
+    with open("encrypted.txt", mode='w', encoding="utf-8") as enc_text:
+        enc_text.write(str(text_binary))
     # text = int(text)
     # text_bin = toBinary(text)
     # print("Исходное сообщение в бинарном виде: " + str(text_bin))
@@ -295,32 +291,50 @@ def RSA_encryption(lengh, e, n):
 
 def RSA_decryption(encrypted, d,n, length):
     print("<Дешифрование>")
-    encrypted = encrypted.split(' ')
+    encrypted = encrypted.split(' ') # разделение
     res = []
     for i in encrypted:
-        res.append(pow(int(i), d, n))
+        res.append(pow(int(i), d, n)) # дешифрование
 
-    res = [bin(i)[2:].zfill(length//4) for i in res]
+    res = [bin(i)[2:].zfill(length//4) for i in res] # дополнение нулями слева
 
-    res_binary = ''.join(map(str, res))
+    res_binary = ''.join(map(str, res)) # объединение
 
     n = int(res_binary, 2)
 
-    decrypted = n.to_bytes((n.bit_length()) + 7//8, 'big')
+    decrypted = n.to_bytes((n.bit_length()) + 7//8, 'big') # перевод в int строку двоичную
     decrypted = decrypted.decode()
+    print("-----" + str(decrypted))
+    decrypted_null = decrypted.replace('NULL', '')
+
 
     # decrypted = pow(int(encrypted), d, n)
-    print("Расшифрованное сообщение: " + str(decrypted))
+    print("Расшифрованное сообщение: " + str(decrypted_null))
+    with open("decrypted.txt", mode='w') as dec_text:
+        dec_text.write(str(decrypted_null))
     return decrypted
+
+#
+# def Ro_Pollard(n):
+#     x = random.randint(1, n-2)
+#     y = 1
+#     i = 0
+#     stage = 2
+#     while gcd(n, abs(x-y) == 1):
+#         if i == stage:
+#             y = x
+#             stage = stage*2
+#         x = (x * x + 1) % n
+#         i = i + 1
+#     return gcd(n, abs(x-y))
 
 
 if __name__ == '__main__':
-    e, n, d = key_gen(512)  # находит n
+    l = 512
+    e, n, d = key_gen(l)  # находит n
     # print(e, n, d)
-    enc = RSA_encryption(512, e, n)
-    dec = RSA_decryption(enc, d, n, 512)
+    enc = RSA_encryption(l, e, n)
+    dec = RSA_decryption(enc, d, n, l)
 
-    # необхоимо релизовать нахождение функции Эйлера (phi)
-    # e = 257 - открытая экспонента, взаимно простая с phi(n)
-    # (e,n) - открытый ключ
-    # (e*d) mod phi(n) - вычисляем d расшир алг Евклида
+    # Написать программу, реализующую атаку на алгоритм RSA
+    # (вычисление закрытого ключа по известному открытому ключу) с использованием ρ-эвристики Полларда. Результатом работы программы должно быть разложение заданного числа n на два простых множителя p и q
