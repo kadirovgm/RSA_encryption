@@ -1,6 +1,8 @@
 import math
 import random
 from math import gcd
+import time
+import timeit
 from collections import namedtuple
 
 
@@ -388,6 +390,8 @@ def PollardRho(n):
     return d
 
 def RSA_attack(e, n):
+    start_timer = timeit.default_timer()
+
     print("\n\nАтака!")
     print("Открытый ключ (e,n): " + str(e) + ", " + str(n))
     print("n: " + str(n))
@@ -406,8 +410,12 @@ def RSA_attack(e, n):
     print("Найденная закрытая экспонента d: " + str(d_find))
     print("Найденный закрытый ключ (d, n): " + str(d_find) + ", " + str(n))
 
+    time_1 = timeit.default_timer() - start_timer
+    print("Время выполнения: " + str(time_1) + " сек")
+
 
 ######################################################################
+
 
 if __name__ == '__main__':
     l = 80
@@ -417,5 +425,7 @@ if __name__ == '__main__':
     dec = RSA_decryption(enc, d, n, l)
 
     # Атака!!!
-    d_attack = RSA_attack(e,n)
+    RSA_attack(e, n)
+
+
 
