@@ -280,13 +280,7 @@ def RSA_encryption(length, e, n):
     print("Зашифрованное сообщение в бинарном виде: " + str(text_binary))
     with open("encrypted.txt", mode='w', encoding="utf-8") as enc_text:
         enc_text.write(str(text_binary))
-    # text = int(text)
-    # text_bin = toBinary(text)
-    # print("Исходное сообщение в бинарном виде: " + str(text_bin))
-    # print(len(text_bin))
 
-    # encrypted = pow(text, e, n)
-    # print("pow: " + str(encrypted))
     return res
 
 def RSA_decryption(encrypted, d,n, length):
@@ -304,7 +298,7 @@ def RSA_decryption(encrypted, d,n, length):
 
     decrypted = n.to_bytes((n.bit_length()) + 7//8, 'big') # перевод в int строку двоичную
     decrypted = decrypted.decode()
-    print("-----" + str(decrypted))
+    # print("-----" + str(decrypted))
     decrypted_null = decrypted.replace('NULL', '')
 
 
@@ -328,13 +322,100 @@ def RSA_decryption(encrypted, d,n, length):
 #         i = i + 1
 #     return gcd(n, abs(x-y))
 
+######################################################################
+
+# Function to calculate (base^exponent)%modulus
+def modular_pow(base, exponent, modulus):
+    # initialize result
+    result = 1
+
+    while (exponent > 0):
+
+        # if y is odd, multiply base with result
+        if (exponent & 1):
+            result = (result * base) % modulus
+
+        # exponent = exponent/2
+        exponent = exponent >> 1
+
+        # base = base * base
+        base = (base * base) % modulus
+
+    return result
+
+
+# method to return prime divisor for n
+def PollardRho(n):
+    # no prime divisor for 1
+    if (n == 1):
+        return n
+
+    # even number means one of the divisors is 2
+    if (n % 2 == 0):
+        return 2
+
+    # we will pick from the range [2, N)
+    x = (random.randint(0, 2) % (n - 2))
+    y = x
+
+    # the constant in f(x).
+    # Algorithm can be re-run with a different c
+    # if it throws failure for a composite.
+    c = (random.randint(0, 1) % (n - 1))
+
+    # Initialize candidate divisor (or result)
+    d = 1
+
+    # until the prime factor isn't obtained.
+    # If n is prime, return n
+    while (d == 1):
+
+        # Tortoise Move: x(i+1) = f(x(i))
+        x = (modular_pow(x, 2, n) + c + n) % n
+
+        # Hare Move: y(i+1) = f(f(y(i)))
+        y = (modular_pow(y, 2, n) + c + n) % n
+        y = (modular_pow(y, 2, n) + c + n) % n
+
+        # check gcd of |x-y| and n
+        d = math.gcd(abs(x - y), n)
+
+        # retry if the algorithm fails to find prime factor
+        # with chosen x and c
+        if (d == n):
+            return PollardRho(n)
+
+    return d
+
+def RSA_attack(e, n):
+    print("\n\nАтака!")
+    print("Открытый ключ (e,n): " + str(e) + ", " + str(n))
+    print("n: " + str(n))
+    print("Применяем алгоритм Полларда ро эвристики для факторизации n")
+    div_1 = PollardRho(n)
+    div_2 = n//div_1
+
+    print("Первый делитель для n: ", div_1)
+    print("Второй делитель для n: ", div_2)
+    fi_find = phi(div_1, div_2)
+    print("Фи = " + str(fi_find))
+    print("Применяем алгоритм Евклида для нахождения закрытой экспоненты")
+    d_find = Evklid_alg_extended(e, fi_find)
+    if d_find < 0:  # если d меньше 0, прибавляем фи
+        d_find = d_find + fi_find
+    print("Найденная закрытая экспонента d: " + str(d_find))
+    print("Найденный закрытый ключ (d, n): " + str(d_find) + ", " + str(n))
+
+
+######################################################################
 
 if __name__ == '__main__':
-    l = 512
+    l = 80
     e, n, d = key_gen(l)  # находит n
     # print(e, n, d)
     enc = RSA_encryption(l, e, n)
     dec = RSA_decryption(enc, d, n, l)
 
-    # Написать программу, реализующую атаку на алгоритм RSA
-    # (вычисление закрытого ключа по известному открытому ключу) с использованием ρ-эвристики Полларда. Результатом работы программы должно быть разложение заданного числа n на два простых множителя p и q
+    # Атака!!!
+    d_attack = RSA_attack(e,n)
+
