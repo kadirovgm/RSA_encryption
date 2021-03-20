@@ -1,44 +1,11 @@
 import math
 import random
 from math import gcd
-import time
 import timeit
 from collections import namedtuple
 
 
-# # # входные данные
-# def quick_power_alg(x,d,n):
-#
-#     # x^d(mod n)
-#     y = 1
-#     while d > 0:
-#         if d % 2 == 1:
-#             y = (y*x) % n
-#         else:
-#             d = d // 2
-#             x = (x*x) % n
-#
-#     print(y)
-#
-# quick_power_alg(595, 703, 991)
-
-# b = pow(595, 703, 991)
-# print(b)
-# def fastExp(b, n):
-# #     def even(n):#проверка четности
-# #         if n % 2 == 0:
-# #             return 1
-# #         return 0
-# #     if n == 0:
-# #         return 1
-# #     if even(n):
-# #         return fastExp(b, n/2)**2
-# #     return b*fastExp(b, n-1)
-# #
-# # print(fastExp(2,8))
-
 # # Алгоритм Евклида
-#
 # def Evklid_alg(a, b): # делением
 #     while a != 0 and b != 0:
 #         if a > b:
@@ -48,7 +15,6 @@ from collections import namedtuple
 #     print(a+b)
 
 # # Алгоритм Евклида вычитанием
-#
 # def Evklid_alg_minus(a, b):
 #     while a != b:
 #         if a > b:
@@ -56,46 +22,8 @@ from collections import namedtuple
 #         else:
 #             b = b - a
 #     print(a)
-#
 
-
-# # Алгоритм Евклида по книжке
-#
-# def Evklid_alg_kniga(a,b):
-#     while b != 0:
-#         temp = a % b
-#         a = b
-#         b = temp
-#     print(a)
-# Evklid_alg_kniga(30,18)
-
-
-#############################################################################################################################
-# # Task 1
-# Программно реализовать процедуру генерации открытого и
-# закрытого ключей заданной длины L (128, 256, 512). В качестве открытой экспоненты использовать одно из чисел Ферма (17, 257, 65537). Сформированные
-# ключи сохранить в файлы: открытый – в файл public.txt, а закрытый – в файл
-# private.txt.
-
-# L = 60, e = 17
-
-# def primFerma(a,n):
-#     if a**(n-1)%n==1:
-#         print("правдоподобно простое")
-#     else:
-#         print ("составное")
-# primFerma(10,11000101)
-
-# def is_prime(num, test_count):
-#     for i in range(test_count):
-#
-#         rnd = random.randint(1, num - 1)
-#
-#         if (rnd ** (num - 1) % num != 1):
-#             return False
-#
-#     return True
-
+# Функция перевода в двоичное число
 def toBinary(a):
     result = []
 
@@ -106,7 +34,7 @@ def toBinary(a):
     return result
 
 
-# Расширенный алгоритм Евклида (-1 1)
+# Расширенный алгоритм Евклида
 # найти d=НОД(m,n) и найти s, t такие, что d = s*m + t*n
 def Evklid_alg_extended(m, n):
     a = m
@@ -135,12 +63,13 @@ def Evklid_alg_extended(m, n):
     return s
 
 
+# Тест простоты Миллера-Рабина
 def is_Prime(n):
 
     if n != int(n): # проверка на целостность
         return False
     n = int(n)
-    # Miller-Rabin test for prime
+
     if n == 0 or n == 1 or n == 4 or n == 6 or n == 8 or n == 9: # проверка случаев при которых false
         return False
 
@@ -169,6 +98,7 @@ def is_Prime(n):
     return True
 
 
+# Функция генерации простых чисел
 def rand_prostoy_chislo(numeric, temp):
     result = random.getrandbits(numeric)
     # print("1: " + str(result))
@@ -194,17 +124,13 @@ def rand_prostoy_chislo(numeric, temp):
         rand_prostoy_chislo(numeric, temp)
 
 
-# def phi(n): # функция Эйлера
-#     amount = 0
-#     for k in range(1, n + 1):
-#         if gcd(n, k) == 1:
-#             amount += 1
-#     return amount
+# Функция нахождения фи(n)
 def phi(p, q):
     phi_n = ((p - 1) * (q - 1))
     return phi_n
 
 
+# Функция нахождения открытой экспоненты
 def find_e(f):
     if gcd(f, 17) == 1:
         return 17
@@ -216,6 +142,7 @@ def find_e(f):
         return False
 
 
+# Функция генерации ключей
 def key_gen(l):
     # l = 512  # key lengh
     print("Генерируем числа p и q заданной битовой длины и проверяем на простоты тестом Миллера-Рабина: ")
@@ -260,6 +187,7 @@ def key_gen(l):
     return e, n, d
 
 
+# Шифрование
 def RSA_encryption(length, e, n):
     print("<Шифрование>")
     # text = random.getrandbits(lengh // 8)
@@ -285,6 +213,8 @@ def RSA_encryption(length, e, n):
 
     return res
 
+
+# Дешифрование
 def RSA_decryption(encrypted, d,n, length):
     print("<Дешифрование>")
     encrypted = encrypted.split(' ') # разделение
@@ -310,80 +240,60 @@ def RSA_decryption(encrypted, d,n, length):
         dec_text.write(str(decrypted_null))
     return decrypted
 
+
+# # функция для вычисления (base^exponent)%modulus
+# def modular_pow(base, exponent, modulus):
+#     # результат
+#     result = 1
 #
-# def Ro_Pollard(n):
-#     x = random.randint(1, n-2)
-#     y = 1
-#     i = 0
-#     stage = 2
-#     while gcd(n, abs(x-y) == 1):
-#         if i == stage:
-#             y = x
-#             stage = stage*2
-#         x = (x * x + 1) % n
-#         i = i + 1
-#     return gcd(n, abs(x-y))
-
-######################################################################
-
-# Function to calculate (base^exponent)%modulus
-def modular_pow(base, exponent, modulus):
-    # initialize result
-    result = 1
-
-    while (exponent > 0):
-
-        # if y is odd, multiply base with result
-        if (exponent & 1):
-            result = (result * base) % modulus
-
-        # exponent = exponent/2
-        exponent = exponent >> 1
-
-        # base = base * base
-        base = (base * base) % modulus
-
-    return result
+#     while (exponent > 0):
+#
+#         # if y is odd, multiply base with result
+#         if (exponent & 1):
+#             result = (result * base) % modulus
+#
+#         # exponent = exponent/2
+#         exponent = exponent >> 1
+#
+#         # base = base * base
+#         base = (base * base) % modulus
+#
+#     return result
 
 
-# method to return prime divisor for n
+# вычислим делитель n методом ро эвристики Полларда
 def PollardRho(n):
-    # no prime divisor for 1
+    # для единицы делитель 1
     if (n == 1):
         return n
-
-    # even number means one of the divisors is 2
+    # если число четное, один из делителей 2
     if (n % 2 == 0):
         return 2
 
-    # we will pick from the range [2, N)
-    x = (random.randint(0, 2) % (n - 2))
+    x = (random.randint(0, 2) % (n - 2))  # остаток от деления случ числа (0, 2) на (n - 2)
     y = x
 
-    # the constant in f(x).
-    # Algorithm can be re-run with a different c
-    # if it throws failure for a composite.
+    # константа для f(x).
     c = (random.randint(0, 1) % (n - 1))
 
-    # Initialize candidate divisor (or result)
+    # результат (потенциальный делитель)
     d = 1
 
-    # until the prime factor isn't obtained.
-    # If n is prime, return n
+    # пока простой делитель не будет получен
+    # если n простой, return n
     while (d == 1):
 
-        # Tortoise Move: x(i+1) = f(x(i))
-        x = (modular_pow(x, 2, n) + c + n) % n
+        # x(i+1) = f(x(i))
+        x = (pow(x, 2, n) + c + n) % n
 
-        # Hare Move: y(i+1) = f(f(y(i)))
-        y = (modular_pow(y, 2, n) + c + n) % n
-        y = (modular_pow(y, 2, n) + c + n) % n
+        # y(i+1) = f(f(y(i)))
+        y = (pow(y, 2, n) + c + n) % n
+        y = (pow(y, 2, n) + c + n) % n
 
-        # check gcd of |x-y| and n
+        # проверка НОД у |x-y| и n
         d = math.gcd(abs(x - y), n)
 
-        # retry if the algorithm fails to find prime factor
-        # with chosen x and c
+        # Если делитель не найден - заново
         if (d == n):
             return PollardRho(n)
 
