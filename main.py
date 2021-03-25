@@ -5,24 +5,6 @@ import timeit
 from collections import namedtuple
 
 
-# # Алгоритм Евклида
-# def Evklid_alg(a, b): # делением
-#     while a != 0 and b != 0:
-#         if a > b:
-#             a = a % b
-#         else:
-#             b = b % a
-#     print(a+b)
-
-# # Алгоритм Евклида вычитанием
-# def Evklid_alg_minus(a, b):
-#     while a != b:
-#         if a > b:
-#             a = a - b
-#         else:
-#             b = b - a
-#     print(a)
-
 # Функция перевода в двоичное число
 def toBinary(a):
     result = []
@@ -147,10 +129,15 @@ def key_gen(l):
     # l = 512  # key lengh
     print("Генерируем числа p и q заданной битовой длины и проверяем на простоты тестом Миллера-Рабина: ")
     l_half = l // 2
+    r = 0.35
     print("p is: ")
-    prime_p = rand_prostoy_chislo(l_half, 1)
+    #prime_p = rand_prostoy_chislo(l_half, 1)
+    prime_p = rand_prostoy_chislo(int(r*l), 1)
+
     print("q is: ")
-    prime_q = rand_prostoy_chislo(l_half, 2)
+    #prime_q = rand_prostoy_chislo(l_half, 2)
+    prime_q = rand_prostoy_chislo(int((1-r)*l), 2)
+
     with open('p_prime.txt') as p:  # считываем регистр
         p = p.read()
     with open('q_prime.txt') as q:  # считываем регистр
@@ -194,9 +181,9 @@ def RSA_encryption(length, e, n):
     with open("text.txt") as text_file:
         text = text_file.read()
 
-    text_binary = [format(int.from_bytes(i.encode(), 'big'), '08b') for i in text] # перевод в двоичный код
-    text_binary = ''.join(text_binary) # объединение
-    text_binary = [text_binary[x:x + length//4] for x in range(0, len(text_binary), length//4)] # разделение на блоки по l//4
+    text_binary = [format(int.from_bytes(i.encode(), 'big'), '08b') for i in text]  # перевод в двоичный код
+    text_binary = ''.join(text_binary)  # объединение
+    text_binary = [text_binary[x:x + length//4] for x in range(0, len(text_binary), length//4)]  # разделение на блоки по l//4
 
     res = []
     for i in text_binary:
@@ -215,29 +202,30 @@ def RSA_encryption(length, e, n):
 
 
 # Дешифрование
-def RSA_decryption(encrypted, d,n, length):
+def RSA_decryption(encrypted, d, n, length):
     print("<Дешифрование>")
-    encrypted = encrypted.split(' ') # разделение
+    encrypted = encrypted.split(' ')  # разделение
     res = []
     for i in encrypted:
-        res.append(pow(int(i), d, n)) # дешифрование
+        res.append(pow(int(i), d, n))  # дешифрование
 
-    res = [bin(i)[2:].zfill(length//4) for i in res] # дополнение нулями слева
+    res = [bin(i)[2:].zfill(length // 4) for i in res]  # дополнение нулями слева (перевод в двоичный)
 
-    res_binary = ''.join(map(str, res)) # объединение
+    res_binary = ''.join(map(str, res))  # объединение
 
     n = int(res_binary, 2)
+    decrypted = n.to_bytes((n.bit_length()), 'big')  # перевод в int строку двоичную
 
-    decrypted = n.to_bytes((n.bit_length()) + 7//8, 'big') # перевод в int строку двоичную
     decrypted = decrypted.decode()
     # print("-----" + str(decrypted))
-    decrypted_null = decrypted.replace('NULL', '')
+    # decrypted_null = decrypted.replace('NULL', '')
+    decrypted.lstrip("0")
 
 
     # decrypted = pow(int(encrypted), d, n)
-    print("Расшифрованное сообщение: " + str(decrypted_null))
+    print("Расшифрованное сообщение: " + str(decrypted))
     with open("decrypted.txt", mode='w') as dec_text:
-        dec_text.write(str(decrypted_null))
+        dec_text.write(str(decrypted))
     return decrypted
 
 
@@ -269,35 +257,27 @@ def PollardRho(n):
     # если число четное, один из делителей 2
     if (n % 2 == 0):
         return 2
-
     x = (random.randint(0, 2) % (n - 2))  # остаток от деления случ числа (0, 2) на (n - 2)
     y = x
-
     # константа для f(x).
     c = (random.randint(0, 1) % (n - 1))
-
     # результат (потенциальный делитель)
     d = 1
-
     # пока простой делитель не будет получен
     # если n простой, return n
     while (d == 1):
-
         # x(i+1) = f(x(i))
         x = (pow(x, 2, n) + c + n) % n
-
         # y(i+1) = f(f(y(i)))
         y = (pow(y, 2, n) + c + n) % n
         y = (pow(y, 2, n) + c + n) % n
-
         # проверка НОД у |x-y| и n
         d = math.gcd(abs(x - y), n)
-
         # Если делитель не найден - заново
         if (d == n):
             return PollardRho(n)
-
     return d
+
 
 def RSA_attack(e, n):
     start_timer = timeit.default_timer()
@@ -328,7 +308,7 @@ def RSA_attack(e, n):
 
 
 if __name__ == '__main__':
-    l = 80
+    l = 120
     e, n, d = key_gen(l)  # находит n
     # print(e, n, d)
     enc = RSA_encryption(l, e, n)
